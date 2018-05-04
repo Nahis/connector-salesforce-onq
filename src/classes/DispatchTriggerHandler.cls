@@ -156,22 +156,15 @@ public class DispatchTriggerHandler
                     }                        
                     dispJob.dispconn__Service_Provider__c = sp.Id;                                                    
 
-
-                    /*Contact contact;
-                    try {
-                        contact = [SELECT Name FROM Contact where Id =: extJob.ContactId LIMIT 1][0];
-                    }
-                    catch (Exception ex) {
-                        extJob.addError('Dispatch: Contact must be assigned');
-                    }*/
-
                     /* CONTACT NAME, EMAIL AND PHONE */
-                    //dispJob.dispconn__Contact__c = extJob.ContactId;
                     try {
                         Account account = mapAccounts.get(extJob.AccountId);                    
-                        //Account account = [SELECT First_Name__c, Last_Name__c, Phone,Email__c FROM Account WHERE Id =: extJob.AccountId LIMIT 1][0];
-                        dispJob.dispconn__First_Name__c = account.First_Name__c;
-                        dispJob.dispconn__Last_Name__c = account.Last_Name__c;
+                        if (string.isBlank(account.First_Name__c) && string.isBlank(account.Last_Name__c)) {
+                            dispJob.dispconn__First_Name__c = account.Name;
+                        } else {
+                            dispJob.dispconn__First_Name__c = account.First_Name__c;
+                            dispJob.dispconn__Last_Name__c = account.Last_Name__c;
+                        }
                         if (!String.isBlank(account.Phone)) {
                             dispJob.dispconn__Mobile__c = account.Phone;
                         }
@@ -187,8 +180,6 @@ public class DispatchTriggerHandler
                     Property__c property;
                     try {
                         property = mapProperties.get(extJob.Property__c);     
-                        //property = [SELECT Name,Street_Address__c, Street_Address_2__c, City__c, State__c, Zip_Code__c, Country__c
-                        //              FROM Property__c where Id =: extJob.Property__c LIMIT 1][0];
                     }
                     catch (Exception ex) {
                         extJob.addError('Dispatch: Property must be assigned');
